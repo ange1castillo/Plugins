@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.29.5)
 
 # Sets a few variables, like PROJECT_NAME
-project(FuseAudioPlugin)
+project(BasicOscillator)
 
 set(CMAKE_CXX_STANDARD 23)
 if (APPLE)

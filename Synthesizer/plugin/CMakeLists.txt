@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.29.5)
 
-project(AudioPlugin VERSION 0.1.0)
+project(BasicOscillator VERSION 0.1.0)
 
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Synthesizer")
 
@@ -10,8 +10,8 @@ juce_add_plugin(${PROJECT_NAME}
     IS_SYNTH TRUE # may change this
     NEEDS_MIDI_INPUT TRUE # may change this
     NEEDS_MIDI_OUTPUT TRUE # may change this
-    PLUGIN_MANUFACTURER_CODE OVTE # change this
-    PLUGIN_CODE over # change this
+    PLUGIN_MANUFACTURER_CODE Ovte # change this
+    PLUGIN_CODE Over # change this
     FORMATS Standalone # may change this
     PRODUCT_NAME "Synthesizer" # change this
 )
@@ -34,10 +34,20 @@ target_include_directories(${PROJECT_NAME}
 # Links to all necessary dependencies. The present ones are recommended by JUCE.
 # If you use one of the additional modules, like the DSP module, you need to specify it here.
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        juce::juce_audio_utils
-        juce::juce_dsp
     PUBLIC
+        juce::juce_audio_basics
+        juce::juce_audio_devices
+        juce::juce_audio_formats
+        juce::juce_audio_plugin_client
+        juce::juce_audio_processors
+        juce::juce_audio_utils
+        juce::juce_core
+        juce::juce_data_structures
+        juce::juce_dsp
+        juce::juce_events
+        juce::juce_graphics
+        juce::juce_gui_basics
+        juce::juce_gui_extra
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
