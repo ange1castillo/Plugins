@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.29.5)
 
 project(AudioPlugin VERSION 0.1.0)
 
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Gello Equalizer")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Synthesizer")
 
 # Adds a plugin target
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME Gello # change this
-    IS_SYNTH FALSE # may change this
-    NEEDS_MIDI_INPUT FALSE # may change this
-    NEEDS_MIDI_OUTPUT FALSE # may change this
+    IS_SYNTH TRUE # may change this
+    NEEDS_MIDI_INPUT TRUE # may change this
+    NEEDS_MIDI_OUTPUT TRUE # may change this
     PLUGIN_MANUFACTURER_CODE OVTE # change this
     PLUGIN_CODE over # change this
-    FORMATS Standalone Plugin # may change this
-    PRODUCT_NAME "Gello Equalizer" # change this
+    FORMATS Standalone # may change this
+    PRODUCT_NAME "Synthesizer" # change this
 )
 
 # Sets the source files of the plugin project.

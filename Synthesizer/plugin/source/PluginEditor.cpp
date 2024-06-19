@@ -1,5 +1,5 @@
-#include <Gello Equalizer/PluginEditor.h>
-#include <Gello Equalizer/PluginProcessor.h>
+#include <Synthesizer/PluginEditor.h>
+#include <Synthesizer/PluginProcessor.h>
 
 //cmake -S . -B build
 //cmake --build build

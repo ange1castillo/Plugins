@@ -1,5 +1,5 @@
-#include <Gello Equalizer/PluginProcessor.h>
-#include <Gello Equalizer/PluginEditor.h>
+#include <Synthesizer/PluginProcessor.h>
+#include <Synthesizer/PluginEditor.h>
 
 namespace audio_plugin {
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
