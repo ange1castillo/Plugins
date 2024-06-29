@@ -16,19 +16,25 @@ juce_add_plugin(${PROJECT_NAME}
     PRODUCT_NAME "Synthesizer" # change this
 )
 
+juce_generate_juce_header(${PROJECT_NAME})
+
 # Sets the source files of the plugin project.
 target_sources(${PROJECT_NAME}
     PRIVATE
         source/PluginEditor.cpp
         source/PluginProcessor.cpp
+        source/SynthVoice.cpp
         ${INCLUDE_DIR}/PluginEditor.h
         ${INCLUDE_DIR}/PluginProcessor.h
+        ${INCLUDE_DIR}/SynthSound.h
+        ${INCLUDE_DIR}/SynthVoice.h
 )
 
 # Sets the include directories of the plugin project.
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ../libs/juce/examples/DemoRunner/JuceLibraryCode
 )
 
 # Links to all necessary dependencies. The present ones are recommended by JUCE.

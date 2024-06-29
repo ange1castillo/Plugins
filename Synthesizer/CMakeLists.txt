@@ -3,10 +3,7 @@ cmake_minimum_required(VERSION 3.29.5)
 # Sets a few variables, like PROJECT_NAME
 project(Synthesizer)
 
-set(CMAKE_CXX_STANDARD 23)
-if (APPLE)
-    set(CMAKE_CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 20)
 
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 

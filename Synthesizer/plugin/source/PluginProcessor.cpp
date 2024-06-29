@@ -12,10 +12,13 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                      #endif
                        )
 {
+    synth.addSound(new SynthSound());
+    synth.addVoice(new SynthVoice());
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
 {
+
 }
 
 //==============================================================================
@@ -86,6 +89,8 @@ void AudioPluginAudioProcessor::changeProgramName (int index, const juce::String
 //==============================================================================
 void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+
+    synth.setCurrentPlaybackSampleRate(sampleRate);
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
     spec.sampleRate = sampleRate;
@@ -139,6 +144,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+
+    for(int x { 0 }; x < synth.getNumVoices(); ++x) {
+        if(auto voice = dynamic_cast<juce::SynthesiserVoice*>(synth.getVoice(x))) {
+
+        }
+    }
+
+    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
     juce::dsp::AudioBlock<float> audioBlock { buffer };
     osc.process(juce::dsp::ProcessContextReplacing<float> (audioBlock));
