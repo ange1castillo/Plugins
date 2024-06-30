@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Synthesizer/SynthSound.h"
 
 class SynthVoice : public SynthesiserVoice
 {
@@ -13,4 +14,13 @@ public:
     void pitchWheelMoved (int newValue) override;
     void controllerMoved (int controllerNumber, int newValue) override;
     void renderNextBlock (AudioBuffer<float>&, int startSample, int numSamples) override;
+    void prepareToPlay (double sampleRate, int samplesPerBlock, int outputChannels);
+
+private:
+    juce::ADSR adsr;
+    juce::ADSR::Parameters adsrParams;
+
+    juce::dsp::Oscillator<float> osc { [](float x) { return std::sin(x); } };
+    juce::dsp::Gain<float> gain;
+    bool isPrepared { false };
 };

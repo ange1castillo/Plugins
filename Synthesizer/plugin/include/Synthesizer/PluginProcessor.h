@@ -48,6 +48,4 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
     juce::Synthesiser synth;
-    juce::dsp::Oscillator<float> osc { [](float x) { return std::sin(x); } };
-    juce::dsp::Gain<float> gain;
 };

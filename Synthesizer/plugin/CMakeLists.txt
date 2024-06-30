@@ -9,10 +9,10 @@ juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME Gello # change this
     IS_SYNTH TRUE # may change this
     NEEDS_MIDI_INPUT TRUE # may change this
-    NEEDS_MIDI_OUTPUT TRUE # may change this
+    NEEDS_MIDI_OUTPUT FALSE # may change this
     PLUGIN_MANUFACTURER_CODE Ovte # change this
     PLUGIN_CODE Over # change this
-    FORMATS Standalone # may change this
+    FORMATS Standalone AU # may change this
     PRODUCT_NAME "Synthesizer" # change this
 )
 
