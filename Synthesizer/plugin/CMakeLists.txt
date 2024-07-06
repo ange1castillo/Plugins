@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.29.5)
 
 project(Synthesizer VERSION 0.1.0)
 
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Synthesizer")
+set(INCLUDE_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Data")
+set(INCLUDE_SYNTHESIZER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Synthesizer")
+set(INCLUDE_UI_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/UI")
+
+set(SOURCE_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/Data")
+set(SOURCE_SYNTHESIZER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/Synthesizer")
+set(SOURCE_UI_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/source/UI")
 
 # Adds a plugin target
 juce_add_plugin(${PROJECT_NAME}
@@ -21,13 +27,19 @@ juce_generate_juce_header(${PROJECT_NAME})
 # Sets the source files of the plugin project.
 target_sources(${PROJECT_NAME}
     PRIVATE
-        source/PluginEditor.cpp
-        source/PluginProcessor.cpp
-        source/SynthVoice.cpp
-        ${INCLUDE_DIR}/PluginEditor.h
-        ${INCLUDE_DIR}/PluginProcessor.h
-        ${INCLUDE_DIR}/SynthSound.h
-        ${INCLUDE_DIR}/SynthVoice.h
+        ${INCLUDE_DATA_DIR}/AdsrData.h
+        ${SOURCE_DATA_DIR}/AdsrData.cpp
+
+        ${SOURCE_SYNTHESIZER_DIR}/PluginEditor.cpp
+        ${SOURCE_SYNTHESIZER_DIR}/PluginProcessor.cpp
+        ${SOURCE_SYNTHESIZER_DIR}/SynthVoice.cpp
+        ${INCLUDE_SYNTHESIZER_DIR}/PluginEditor.h
+        ${INCLUDE_SYNTHESIZER_DIR}/PluginProcessor.h
+        ${INCLUDE_SYNTHESIZER_DIR}/SynthSound.h
+        ${INCLUDE_SYNTHESIZER_DIR}/SynthVoice.h
+
+        ${INCLUDE_UI_DIRECTORY}/AdsrComponent.h
+        ${SOURCE_UI_DIRECTORY}/AdsrComponent.cpp
 )
 
 # Sets the include directories of the plugin project.

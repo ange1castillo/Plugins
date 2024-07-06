@@ -1,7 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Synthesizer/SynthSound.h"
+#include "SynthSound.h"
 
 class SynthVoice : public SynthesiserVoice
 {
