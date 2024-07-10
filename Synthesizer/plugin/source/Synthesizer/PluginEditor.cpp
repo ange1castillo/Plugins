@@ -24,5 +24,5 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    adsr.setBounds (getLocalBounds());
+    adsr.setBounds (getWidth() / 2, 0, getWidth() / 2, getHeight());
 }

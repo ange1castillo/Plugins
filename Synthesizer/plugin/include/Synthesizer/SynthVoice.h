@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Data/AdsrData.h"
 #include "SynthSound.h"
 
 class SynthVoice : public SynthesiserVoice
@@ -15,11 +16,10 @@ public:
     void controllerMoved (int controllerNumber, int newValue) override;
     void renderNextBlock (AudioBuffer<float>&, int startSample, int numSamples) override;
     void prepareToPlay (double sampleRate, int samplesPerBlock, int outputChannels);
-    void updateADSR (const float attack, const float decay, const float sustain, const float release);
+    void update (const float attack, const float decay, const float sustain, const float release);
 
 private:
-    juce::ADSR adsr;
-    juce::ADSR::Parameters adsrParams;
+    AdsrData adsr;
     juce::AudioBuffer<float> synthBuffer;
 
     juce::dsp::Oscillator<float> osc { [](float x) { return x / juce::MathConstants<float>::pi; } };
