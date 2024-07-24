@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.29.5)
 
-project(Equalizer VERSION 0.1.0)
+project(Equalizer VERSION 1.0.0)
 
 set(INCLUDE_Equalizer_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

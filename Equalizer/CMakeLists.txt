@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.29.5)
 
 # Sets a few variables, like PROJECT_NAME
-project(Equalizer)
+project(Equalizer VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -39,3 +39,6 @@ add_subdirectory(plugin)
 
 # Adds all the targets configured in the "test" folder.
 add_subdirectory(test)
+
+
+add_subdirectory(libs/juce/extras/AudioPluginHost)
