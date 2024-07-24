@@ -3,6 +3,19 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <JuceHeader.h>
 
+struct ChainSettings
+{
+    float peakFreq { 0 };
+    float peakGainInDecibels { 0 };
+    float peakQuality { 1.f };
+    float lowCutFreq { 0 };
+    float highCutFreq { 0 };
+    int lowCutSlope { 0 };
+    int highCutSlope { 0 };
+};
+
+ChainSettings getChainSettings (juce::AudioProcessorValueTreeState& apvts);
+
 //==============================================================================
 class EqualizerAudioProcessor final : public juce::AudioProcessor
 {
@@ -56,6 +69,14 @@ private:
 
     MonoChain leftChain;
     MonoChain rightChain;
+
+    enum ChainPositions
+    {
+        LowCut,
+        Peak,
+        HighCut,
+        maxChainPositions
+    };
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EqualizerAudioProcessor)
