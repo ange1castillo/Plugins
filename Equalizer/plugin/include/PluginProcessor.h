@@ -8,8 +8,7 @@ enum Slope
     Slope_12,
     Slope_24,
     Slope_36,
-    Slope_48,
-    max_slopes
+    Slope_48
 };
 
 struct ChainSettings
@@ -19,8 +18,8 @@ struct ChainSettings
     float peakQuality { 1.f };
     float lowCutFreq { 0 };
     float highCutFreq { 0 };
-    int lowCutSlope { Slope::Slope_12 };
-    int highCutSlope { Slope::Slope_12 };
+    Slope lowCutSlope { Slope::Slope_12 };
+    Slope highCutSlope { Slope::Slope_12 };
 };
 
 ChainSettings getChainSettings (juce::AudioProcessorValueTreeState& apvts);
@@ -88,10 +87,60 @@ private:
     };
 
     void updatePeakFilter (const ChainSettings& chainSettings);
-
     using Coefficients = Filter::CoefficientsPtr;
-
     static void updateCoefficients (Coefficients& old, const Coefficients& replacement);
+
+    template <typename ChainType, typename CoefficientType>
+    void updateCutFilter (ChainType& leftLowCut, const CoefficientType& cutCoefficients, const Slope& lowCutSlope)
+    {
+        leftLowCut.template setBypassed<0> (true);
+        leftLowCut.template setBypassed<1> (true);
+        leftLowCut.template setBypassed<2> (true);
+        leftLowCut.template setBypassed<3> (true);
+
+        switch (lowCutSlope)
+        {
+            case Slope_12:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0> (false);
+                break;
+            }
+                
+            case Slope_24:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0> (false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1> (false);
+                break;
+            }
+                
+            case Slope_36:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0> (false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1> (false);
+                *leftLowCut.template get<2>().coefficients = *cutCoefficients[2];
+                leftLowCut.template setBypassed<2> (false);
+                break;
+            }
+
+            case Slope_48:
+            {
+                *leftLowCut.template get<0>().coefficients = *cutCoefficients[0];
+                leftLowCut.template setBypassed<0> (false);
+                *leftLowCut.template get<1>().coefficients = *cutCoefficients[1];
+                leftLowCut.template setBypassed<1> (false);
+                *leftLowCut.template get<2>().coefficients = *cutCoefficients[2];
+                leftLowCut.template setBypassed<2> (false);
+                *leftLowCut.template get<3>().coefficients = *cutCoefficients[3];
+                leftLowCut.template setBypassed<3> (false);
+                break;
+            }
+        }
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EqualizerAudioProcessor)
