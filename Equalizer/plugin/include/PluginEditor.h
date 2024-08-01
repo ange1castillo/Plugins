@@ -12,28 +12,35 @@ struct CustomRotarySlider : juce::Slider
     }
 };
 
+struct ResponseCurveComponent : juce::Component,
+                                juce::AudioProcessorParameter::Listener,
+                                juce::Timer
+{
+    ResponseCurveComponent (EqualizerAudioProcessor&);
+    ~ResponseCurveComponent();
+
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsString) override {};
+    void timerCallback();
+    void paint (juce::Graphics& g) override;
+private:
+    EqualizerAudioProcessor& processorRef;
+    juce::Atomic<bool> parametersChanged { false };
+    MonoChain monoChain {};
+};
+
 //==============================================================================
-class EqualizerAudioProcessorEditor final : public juce::AudioProcessorEditor,
-                                                   juce::AudioProcessorParameter::Listener,
-                                                   juce::Timer
+class EqualizerAudioProcessorEditor final : public juce::AudioProcessorEditor
 {
 public:
     explicit EqualizerAudioProcessorEditor (EqualizerAudioProcessor&);
     ~EqualizerAudioProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
     void resized() override;
-    void parameterValueChanged (int parameterIndex, float newValue) override;
-    void parameterGestureChanged (int parameterIndex, bool gestureIsString) override {};
-    void timerCallback();
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     EqualizerAudioProcessor& processorRef;
-
-    juce::Atomic<bool> parametersChanged { false };
 
     CustomRotarySlider peakFreqSlider {};
     CustomRotarySlider peakGainSlider {};
@@ -42,6 +49,8 @@ private:
     CustomRotarySlider highCutFreqSlider {};
     CustomRotarySlider lowCutSlopeSlider {};
     CustomRotarySlider highCutSlopeSlider {};
+
+    ResponseCurveComponent responseCurveComponent;
 
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
@@ -55,8 +64,6 @@ private:
     Attachment highCutSlopeSliderAttachment;
 
     std::vector<juce::Component*> getComps();
-
-    MonoChain monoChain {};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EqualizerAudioProcessorEditor)
 };

@@ -2,22 +2,8 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-EqualizerAudioProcessorEditor::EqualizerAudioProcessorEditor (EqualizerAudioProcessor& p)
-    : AudioProcessorEditor (&p), 
-    processorRef (p), 
-    peakFreqSliderAttachment (processorRef.apvts, "Peak Freq", peakFreqSlider),
-    peakGainSliderAttachment (processorRef.apvts, "Peak Gain", peakGainSlider),
-    peakQualitySliderAttachment (processorRef.apvts, "Peak Quality", peakQualitySlider),
-    lowCutFreqSliderAttachment (processorRef.apvts, "LowCut Freq", lowCutFreqSlider),
-    highCutFreqSliderAttachment (processorRef.apvts, "HighCut Freq", highCutFreqSlider),
-    lowCutSlopeSliderAttachment (processorRef.apvts, "LowCut Slope", lowCutSlopeSlider),
-    highCutSlopeSliderAttachment (processorRef.apvts, "HighCut Slope", highCutSlopeSlider)
+ResponseCurveComponent::ResponseCurveComponent (EqualizerAudioProcessor& p) : processorRef (p)
 {
-    for (auto* comp : getComps())
-    {
-        addAndMakeVisible (comp);
-    }
-
     const auto& params { processorRef.getParameters() };
 
     for (auto param : params)
@@ -26,11 +12,9 @@ EqualizerAudioProcessorEditor::EqualizerAudioProcessorEditor (EqualizerAudioProc
     }
 
     startTimerHz (60);
-
-    setSize (600, 400);
 }
 
-EqualizerAudioProcessorEditor::~EqualizerAudioProcessorEditor()
+ResponseCurveComponent::~ResponseCurveComponent()
 {
     const auto& params { processorRef.getParameters() };
 
@@ -40,15 +24,36 @@ EqualizerAudioProcessorEditor::~EqualizerAudioProcessorEditor()
     }
 }
 
-//==============================================================================
-void EqualizerAudioProcessorEditor::paint (juce::Graphics& g)
+void ResponseCurveComponent::parameterValueChanged (int parameterIndex, float newValue)
+{
+    parametersChanged.set (true);
+}
+
+void ResponseCurveComponent::timerCallback()
+{
+    if (parametersChanged.compareAndSetBool (false, true))
+    {
+        auto chainSettings { getChainSettings (processorRef.apvts) };
+        auto peakCoefficients { makePeakFilter (chainSettings, processorRef.getSampleRate()) };
+        updateCoefficients (monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+
+        auto lowCutCoefficients { makeLowCutFilter (chainSettings, processorRef.getSampleRate()) };
+        updateCutFilter (monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+        
+        auto highCutCoefficients { makeHighCutFilter (chainSettings, processorRef.getSampleRate()) };
+        updateCutFilter (monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+
+        repaint();
+    }
+}
+
+void ResponseCurveComponent::paint (juce::Graphics& g)
 {
     using namespace juce;
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (Colours::black);
 
-    auto bounds { getLocalBounds() };
-    auto responseArea { bounds.removeFromTop (bounds.getHeight() * 0.33) };
+    auto responseArea { getLocalBounds() };
     auto width { responseArea.getWidth() };
 
     auto& lowcut { monoChain.get<ChainPositions::LowCut>() };
@@ -137,10 +142,38 @@ void EqualizerAudioProcessorEditor::paint (juce::Graphics& g)
     g.strokePath (responseCurve, PathStrokeType (2.f));
 }
 
+EqualizerAudioProcessorEditor::EqualizerAudioProcessorEditor (EqualizerAudioProcessor& p)
+    :   AudioProcessorEditor (&p), 
+        processorRef (p), 
+        responseCurveComponent (processorRef),
+        peakFreqSliderAttachment (processorRef.apvts, "Peak Freq", peakFreqSlider),
+        peakGainSliderAttachment (processorRef.apvts, "Peak Gain", peakGainSlider),
+        peakQualitySliderAttachment (processorRef.apvts, "Peak Quality", peakQualitySlider),
+        lowCutFreqSliderAttachment (processorRef.apvts, "LowCut Freq", lowCutFreqSlider),
+        highCutFreqSliderAttachment (processorRef.apvts, "HighCut Freq", highCutFreqSlider),
+        lowCutSlopeSliderAttachment (processorRef.apvts, "LowCut Slope", lowCutSlopeSlider),
+        highCutSlopeSliderAttachment (processorRef.apvts, "HighCut Slope", highCutSlopeSlider)
+{
+    for (auto* comp : getComps())
+    {
+        addAndMakeVisible (comp);
+    }
+
+    setSize (600, 400);
+}
+
+EqualizerAudioProcessorEditor::~EqualizerAudioProcessorEditor()
+{   
+}
+
+//==============================================================================
 void EqualizerAudioProcessorEditor::resized()
 {
     auto bounds { getLocalBounds() };
     auto responsiveArea { bounds.removeFromTop (bounds.getHeight() * 0.33) };
+
+    responseCurveComponent.setBounds (responsiveArea);
+
     auto lowCutArea { bounds.removeFromLeft (bounds.getWidth() * 0.33) };
     auto highCutArea { bounds.removeFromRight (bounds.getWidth() * 0.5) };
 
@@ -155,29 +188,6 @@ void EqualizerAudioProcessorEditor::resized()
     peakQualitySlider.setBounds (bounds);
 }
 
-void EqualizerAudioProcessorEditor::parameterValueChanged (int parameterIndex, float newValue)
-{
-    parametersChanged.set (true);
-}
-
-void EqualizerAudioProcessorEditor::timerCallback()
-{
-    if (parametersChanged.compareAndSetBool (false, true))
-    {
-        auto chainSettings { getChainSettings (processorRef.apvts) };
-        auto peakCoefficients { makePeakFilter (chainSettings, processorRef.getSampleRate()) };
-        updateCoefficients (monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-
-        auto lowCutCoefficients { makeLowCutFilter (chainSettings, processorRef.getSampleRate()) };
-        updateCutFilter (monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
-        
-        auto highCutCoefficients { makeHighCutFilter (chainSettings, processorRef.getSampleRate()) };
-        updateCutFilter (monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
-
-        repaint();
-    }
-}
-
 std::vector<juce::Component*> EqualizerAudioProcessorEditor::getComps()
 {
     return
@@ -188,6 +198,7 @@ std::vector<juce::Component*> EqualizerAudioProcessorEditor::getComps()
         &lowCutFreqSlider,
         &highCutFreqSlider,
         &lowCutSlopeSlider,
-        &highCutSlopeSlider
+        &highCutSlopeSlider,
+        &responseCurveComponent
     };
 }
