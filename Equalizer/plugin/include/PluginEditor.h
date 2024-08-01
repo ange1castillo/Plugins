@@ -13,7 +13,9 @@ struct CustomRotarySlider : juce::Slider
 };
 
 //==============================================================================
-class EqualizerAudioProcessorEditor final : public juce::AudioProcessorEditor
+class EqualizerAudioProcessorEditor final : public juce::AudioProcessorEditor,
+                                                   juce::AudioProcessorParameter::Listener,
+                                                   juce::Timer
 {
 public:
     explicit EqualizerAudioProcessorEditor (EqualizerAudioProcessor&);
@@ -22,11 +24,16 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsString) override {};
+    void timerCallback();
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     EqualizerAudioProcessor& processorRef;
+
+    juce::Atomic<bool> parametersChanged { false };
 
     CustomRotarySlider peakFreqSlider {};
     CustomRotarySlider peakGainSlider {};
