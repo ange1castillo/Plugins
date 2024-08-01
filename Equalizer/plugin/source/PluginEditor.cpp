@@ -17,11 +17,27 @@ EqualizerAudioProcessorEditor::EqualizerAudioProcessorEditor (EqualizerAudioProc
     {
         addAndMakeVisible (comp);
     }
+
+    const auto& params { processorRef.getParameters() };
+
+    for (auto param : params)
+    {
+        param->addListener (this);
+    }
+
+    startTimerHz (60);
+
     setSize (600, 400);
 }
 
 EqualizerAudioProcessorEditor::~EqualizerAudioProcessorEditor()
 {
+    const auto& params { processorRef.getParameters() };
+
+    for (auto param : params)
+    {
+        param->removeListener (this);
+    }
 }
 
 //==============================================================================
@@ -148,7 +164,11 @@ void EqualizerAudioProcessorEditor::timerCallback()
 {
     if (parametersChanged.compareAndSetBool (false, true))
     {
-        
+        auto chainSettings { getChainSettings (processorRef.apvts) };
+        auto peakCoefficients { makePeakFilter (chainSettings, processorRef.getSampleRate()) };
+        updateCoefficients (monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+
+        repaint();
     }
 }
 
