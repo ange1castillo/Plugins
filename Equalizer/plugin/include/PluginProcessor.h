@@ -24,6 +24,20 @@ struct ChainSettings
 
 ChainSettings getChainSettings (juce::AudioProcessorValueTreeState& apvts);
 
+using Filter = juce::dsp::IIR::Filter<float>;
+
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut,
+    maxChainPositions
+};
+
 //==============================================================================
 class EqualizerAudioProcessor final : public juce::AudioProcessor
 {
@@ -69,22 +83,8 @@ public:
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", createParameterLayout() };    
 
 private:
-    using Filter = juce::dsp::IIR::Filter<float>;
-
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
-
     MonoChain leftChain;
     MonoChain rightChain;
-
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut,
-        maxChainPositions
-    };
 
     void updatePeakFilter (const ChainSettings& chainSettings);
     using Coefficients = Filter::CoefficientsPtr;
