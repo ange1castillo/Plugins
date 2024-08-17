@@ -62,6 +62,7 @@ private:
     EqualizerAudioProcessor& processorRef;
     juce::Atomic<bool> parametersChanged { false };
     MonoChain monoChain {};
+    void updateChain();
 };
 
 //==============================================================================
