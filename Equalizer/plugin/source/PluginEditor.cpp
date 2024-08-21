@@ -345,6 +345,8 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
         responseCurve.lineTo (responseArea.getX() + i, map (mags[i]));
     }
 
+    leftChannelFFTPath.applyTransform (AffineTransform().translation (responseArea.getX(), responseArea.getY()));
+
     g.setColour (Colours::blue);
     g.strokePath (leftChannelFFTPath, PathStrokeType (1.f));
 
@@ -374,7 +376,7 @@ void ResponseCurveComponent::resized()
     auto left { renderArea.getX() };
     auto right { renderArea.getRight() };
     auto top { renderArea.getY() };
-    auto bottom { renderArea .getBottom() };
+    auto bottom { renderArea.getBottom() };
     auto width { renderArea.getWidth() };
 
     Array<float> xs;
